@@ -30,16 +30,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/", "/home").permitAll()  // 不需要任何权限
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/h2-console/**").access("hasRole('ADMIN') and hasRole('DBA')")
                 .anyRequest().authenticated()  //All other paths must be authenticated
                 .and()
                 .formLogin()
+//                .and()
+//                .httpBasic();
                 .loginPage("/login")   //设置登录页面
                 .permitAll()
                 .and()
                 .logout()               // 登出
                 .permitAll();
     }
-    
+
 
     @Bean
     @Override
@@ -52,7 +56,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .passwordEncoder(encoder::encode)
                         .roles("USER")
                         .build();
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password("admin")
+                .passwordEncoder(encoder::encode)
+                .roles("ADMIN")
+                .build();
 
-        return new InMemoryUserDetailsManager(user);    // 存储在内存中
+        return new InMemoryUserDetailsManager(user,admin);    // 存储在内存中
     }
 }
