@@ -15,6 +15,25 @@
             <div><label> User Name : <input type="text" name="username" value="user"/> </label></div>
             <div><label> Password: <input type="password" name="password" value="password"/> </label></div>
             <div><input type="submit" value="Sign In"/></div>
+            </br>
+            <div><button type="button" onclick="delCsrf()">清除token</button></div>
         </form>
     </body>
+    <script>
+        var delCsrf = function() {
+            var inputs = document.querySelectorAll("input")
+            var csrf
+            for (var input in inputs) {
+                if(inputs[input].type == 'hidden' && inputs[input].name == '_csrf') {
+                    csrf = inputs[input]
+                    break
+                }
+            }
+            csrf.value = ''
+            if(csrf.value == '') {
+                alert('已清空,需要重新获取Toekn 才能登录')
+            }
+
+        }
+    </script>
 </html>
