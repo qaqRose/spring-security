@@ -47,11 +47,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/", "/home").permitAll()  // 不需要任何权限
-//                .antMatchers("/user/**").authenticated()   //需要验证身份
-
-//                .antMatchers("/user/**").hasRole("USER")
-//                .antMatchers("/admin/**").hasRole("ADMIN")
-//                .antMatchers("/h2-console/**").access("hasRole('ADMIN') and hasRole('DBA')")
+                .antMatchers("/user/**").hasRole("USER")
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/h2-console/**").access("hasRole('ADMIN') and hasRole('DBA')")
                 .anyRequest().authenticated()  //All other paths must be authenticated
                 .and()
                 .formLogin()
@@ -72,12 +70,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
+                .userDetailsService(new CustomUserDetailsService())  //设置自定义UserDetailsService
+                .passwordEncoder(passwordEncoder());    //自定义加密方式
     }
 
     @Bean
-    UserDetailsService customUserService() {
+    UserDetailsService customUserService() {   // 注册bean
         return new CustomUserDetailsService();
     }
 
@@ -87,14 +85,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-//    @Bean
-//    public FilterRegistrationBean csrfFilter() {
-//        FilterRegistrationBean registration = new FilterRegistrationBean();
-//        registration.setFilter(new CsrfFilter(new HttpSessionCsrfTokenRepository()));
-//        registration.addUrlPatterns("/*");
-//        return registration;
-//    }
 
 
     /**
