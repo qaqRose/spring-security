@@ -2,9 +2,11 @@ spring:
 # 定义一个数据源
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://192.168.1.213:3306/security
+    # 高版本mysql 访问完整url
+    url: jdbc:mysql://192.168.1.213:3306/security?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
     username: root
     password: 123456
+
   jpa:
     hibernate:
       ddl-auto: update

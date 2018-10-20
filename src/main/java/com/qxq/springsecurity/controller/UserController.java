@@ -57,7 +57,7 @@ public class UserController {
 //        log.info("username :" + username);
 
 
-        return username;
+        return "";
     }
 
 //    @RequestMapping("/csrf")
