@@ -24,6 +24,12 @@ import java.security.Principal;
 @RequestMapping("/user")
 public class UserController {
     @ResponseBody
+    @RequestMapping("/index")
+    public String index() {
+        return "/user/index";
+    }
+
+    @ResponseBody
     @RequestMapping("/info")
     public String getUsername() {
         // 获取当前主体信息
@@ -44,24 +50,7 @@ public class UserController {
         log.info("username :" + username);
         return username;
     }
-    @ResponseBody
-    @RequestMapping("/prin")
-    public String getUserPrincipal(HttpServletRequest request) {
-//        Authentication auth = (Authentication)request.getUserPrincipal();
-
-//        auth.getAuthorities().stream().forEach(System.out::println);
-
-//        Principal principal = (Principal)auth.getPrincipal();
-
-//        String username = principal.getName();
-//        log.info("username :" + username);
 
 
-        return "";
-    }
 
-//    @RequestMapping("/csrf")
-//    public String csrfTest() {
-//        return "csrfTest";
-//    }
 }

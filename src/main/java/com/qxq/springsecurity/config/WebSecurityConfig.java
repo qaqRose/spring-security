@@ -1,5 +1,6 @@
 package com.qxq.springsecurity.config;
 
+import com.qxq.springsecurity.security.CustomFilterSecurityInterceptor;
 import com.qxq.springsecurity.security.CustomUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
@@ -39,7 +42,17 @@ import java.util.Map;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
+    private CustomFilterSecurityInterceptor filterSecurityInterceptor;
+    @Autowired
     private CustomUserDetailsService userDetailsService;
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        // 以下资源  spring security 不会对其进行拦截
+        web
+                .ignoring()
+                .antMatchers("/favicon.ico");
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -47,10 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/", "/home").permitAll()  // 不需要任何权限
-                .antMatchers("/user/**").hasRole("USER")
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/h2-console/**").access("hasRole('ADMIN') and hasRole('DBA')")
-                .anyRequest().authenticated()  //All other paths must be authenticated
+                 .anyRequest().authenticated()  //All other paths must be authenticated
                 .and()
                 .formLogin()
                 .loginPage("/login")   //设置登录页面
@@ -65,19 +75,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/logout") //自定义登出url
                 .logoutSuccessUrl("/home")   //登出成功后跳转url
                 .invalidateHttpSession(true);
+
+        http.addFilterBefore(filterSecurityInterceptor, FilterSecurityInterceptor.class);
     }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                .userDetailsService(new CustomUserDetailsService())  //设置自定义UserDetailsService
+                .userDetailsService(userDetailsService)  //设置自定义UserDetailsService
                 .passwordEncoder(passwordEncoder());    //自定义加密方式
     }
 
-    @Bean
-    UserDetailsService customUserService() {   // 注册bean
-        return new CustomUserDetailsService();
-    }
 
 
 
