@@ -10,9 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+
     @RequestMapping("/index")
     public String index() {
         return "admin/index";
+    }
+
+    @RequestMapping("/test")
+    public String test() {
+        return "admin/test";
     }
 
 

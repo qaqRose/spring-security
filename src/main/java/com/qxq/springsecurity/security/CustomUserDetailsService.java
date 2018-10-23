@@ -1,24 +1,19 @@
 package com.qxq.springsecurity.security;
 
 import com.qxq.springsecurity.entity.Authority;
-import com.qxq.springsecurity.entity.Role;
 import com.qxq.springsecurity.entity.User;
 import com.qxq.springsecurity.repository.AuthorityRepository;
 import com.qxq.springsecurity.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +40,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("userDetailsService :  查找 {}",username);
         Optional<User> userFromDatabase = userRepository.findByUsername(username);
         User user = userFromDatabase.orElseThrow(() -> new UsernameNotFoundException(
-                "User " + username + " was not found in the database"));
+                "用户 " + username + " 查无此人"));
         log.info("user : {} ", user.toString());
         // 使用认证权限
         List<Authority> authorities = authorityRepository.findAllByUserId(user.getId());

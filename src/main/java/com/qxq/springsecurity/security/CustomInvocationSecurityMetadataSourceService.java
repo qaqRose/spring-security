@@ -61,8 +61,6 @@ public class CustomInvocationSecurityMetadataSourceService implements FilterInvo
         //object 中包含用户请求的request 信息
         HttpServletRequest request = ((FilterInvocation) object).getHttpRequest();
         log.info("当前访问url : {}", request.getServletPath());
-        log.info("当前访问url : {}", request.getPathInfo());
-
         AntPathRequestMatcher matcher;
         String resUrl;
         for(Iterator<String> iter = map.keySet().iterator(); iter.hasNext(); ) {

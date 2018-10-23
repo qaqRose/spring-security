@@ -4,7 +4,6 @@ import com.qxq.springsecurity.security.CustomFilterSecurityInterceptor;
 import com.qxq.springsecurity.security.CustomUserDetailsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,25 +11,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.thymeleaf.expression.Maps;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author: QXQ
@@ -38,13 +23,17 @@ import java.util.Map;
 @Slf4j
 @Configuration
 @EnableWebSecurity
-
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private CustomFilterSecurityInterceptor filterSecurityInterceptor;
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private AuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    @Autowired
+    private AuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -64,6 +53,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login")   //设置登录页面
+                .successHandler(customAuthenticationSuccessHandler)
+                .failureHandler(customAuthenticationFailureHandler)
                 .permitAll();
 
         http
@@ -86,39 +77,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder());    //自定义加密方式
     }
 
-
-
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-
-    /**
-     * 生成两个用户存储在内存中
-     * @return
-     */
-//    @Bean
-//    @Override
-//    public UserDetailsService userDetailsService() {
-////        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-//        PasswordEncoder encoder = passwordEncoder();
-//        UserDetails user =
-//                User.builder()    //创建一个USER角色  的用户
-//                        .username("user")
-//                        .password("password")
-//                        .passwordEncoder(encoder::encode)
-//                        .roles("USER")
-//                        .build();
-//        UserDetails admin = User.builder()
-//                .username("admin")
-//                .password("password")
-//                .passwordEncoder(encoder::encode)
-//                .roles("ADMIN")
-//                .build();
-//        log.info("user :" +user.getPassword());
-//        log.info("admin :" +admin.getPassword());
-//        return new InMemoryUserDetailsManager(user,admin);    // 存储在内存中
-//    }
 }

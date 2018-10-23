@@ -23,4 +23,5 @@ public interface AuthorityRepository extends CustomRepository<Authority, Integer
             "where a.id = ?1",nativeQuery = true)
     public List<Authority> findAllByUserId(Integer id);
 
+
 }

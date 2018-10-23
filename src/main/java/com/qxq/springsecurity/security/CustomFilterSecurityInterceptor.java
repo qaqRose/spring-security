@@ -48,7 +48,7 @@ public class CustomFilterSecurityInterceptor extends AbstractSecurityInterceptor
         log.warn("CustomFilterSecurityInterceptor  拦截器");
         //filterInvocation里面有一个被拦截的url
         //里面调用CustomInvocationSecurityMetadataSourceService的getAttributes(Object object)
-//        获取所需要的权限
+        //获取所需要的权限
         //再调用CustomAccessDecisionManager的decide方法来校验用户的权限是否足够
         invoke(filterInvocation);
 
