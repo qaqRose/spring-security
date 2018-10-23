@@ -3,7 +3,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     # 高版本mysql 访问完整url
-    url: jdbc:mysql://192.168.1.193:3306/security?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    url: jdbc:mysql://192.168.1.103:3306/security?characterEncoding=utf8&useSSL=false&serverTimezone=UTC
     username: root
     password: 123456
 

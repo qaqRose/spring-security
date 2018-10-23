@@ -1,16 +1,15 @@
 package com.qxq.springsecurity.config;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistration;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
+
+import java.util.List;
 
 /**
  * @author: QXQ
  */
 @Configuration
 public class SpringMvcConfig implements WebMvcConfigurer {
-
 
     /**
      * 设置页面跳转对应的视图
@@ -23,5 +22,7 @@ public class SpringMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/hello").setViewName("hello");
         registry.addViewController("/login").setViewName("login");
     }
+
+
 
 }

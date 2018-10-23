@@ -2,6 +2,7 @@ package com.qxq.springsecurity.config;
 
 import com.qxq.springsecurity.security.CustomFilterSecurityInterceptor;
 import com.qxq.springsecurity.security.CustomUserDetailsService;
+import com.qxq.springsecurity.security.validate.code.ValidateCodeFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 /**
@@ -46,9 +48,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         log.info("config : single");
+        // 添加验证码过滤器
+        ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
+        validateCodeFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
         http
+                .addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/", "/home").permitAll()  // 不需要任何权限
+                .antMatchers("/", "/home", "/code/image").permitAll()  // 不需要任何权限
                  .anyRequest().authenticated()  //All other paths must be authenticated
                 .and()
                 .formLogin()

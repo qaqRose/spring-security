@@ -37,7 +37,7 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
         if(securityProperties.getBrower().getLoginResponseType().equals(LoginResponseType.JSON)) {
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());  // 500 状态码
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(objectMapper.writeValueAsString(exception));
+            response.getWriter().write(objectMapper.writeValueAsString(new SimpleResponse(exception.getMessage())));
         } else  {
             super.onAuthenticationFailure(request, response, exception);
         }
