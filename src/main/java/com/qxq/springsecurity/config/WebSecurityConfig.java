@@ -2,6 +2,7 @@ package com.qxq.springsecurity.config;
 
 import com.qxq.springsecurity.security.CustomFilterSecurityInterceptor;
 import com.qxq.springsecurity.security.CustomUserDetailsService;
+import com.qxq.springsecurity.security.properties.SecurityProperties;
 import com.qxq.springsecurity.security.validate.code.ValidateCodeFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationFailureHandler customAuthenticationFailureHandler;
 
+    @Autowired
+    private SecurityProperties securityProperties;
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         // 以下资源  spring security 不会对其进行拦截
@@ -51,14 +55,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 添加验证码过滤器
         ValidateCodeFilter validateCodeFilter = new ValidateCodeFilter();
         validateCodeFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
+        validateCodeFilter.setSecurityProperties(securityProperties);
+        validateCodeFilter.afterPropertiesSet();
         http
                 .addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/", "/home", "/code/image").permitAll()  // 不需要任何权限
-                 .anyRequest().authenticated()  //All other paths must be authenticated
+                .anyRequest().authenticated()  //All other paths must be authenticated
                 .and()
                 .formLogin()
                 .loginPage("/login")   //设置登录页面
+                .loginProcessingUrl("/auth/form")
                 .successHandler(customAuthenticationSuccessHandler)
                 .failureHandler(customAuthenticationFailureHandler)
                 .permitAll();

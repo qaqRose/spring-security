@@ -17,7 +17,7 @@ import java.util.Iterator;
  */
 @Slf4j
 @Service
-public class CustomAccessDecisionManager implements AccessDecisionManager {
+public class  CustomAccessDecisionManager implements AccessDecisionManager {
     /**
      *  判定是否拥有权限的决策方法，
      *  authentication 是 CustomUserDetailsService 中 用户的 authorities

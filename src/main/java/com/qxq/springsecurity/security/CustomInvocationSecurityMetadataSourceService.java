@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
+ * 获取安全元数据服务
+ * 即获取权限信息
  * @author: QXQ
  */
 @Slf4j
