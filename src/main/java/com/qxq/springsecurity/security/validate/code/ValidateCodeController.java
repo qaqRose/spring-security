@@ -7,6 +7,7 @@ import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.SessionStrategy;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.ServletWebRequest;
 
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -23,29 +25,19 @@ import java.util.Random;
  */
 @RestController
 public class ValidateCodeController {
-    // 图片验证码的KEY
-    public static final String SESSION_KEY = "IMAGE_CODE_KEY";
-
-    private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
     @Autowired
-    private ValidateCodeGenerator imageCodeGenerator;
+    private Map<String,ValidateCodeProcessor> validateCodeProcessors;
 
     /**
      * 返回验证码
      * @param request
-     * @param response
      * @throws IOException
      */
-    @GetMapping("/code/image")
-    public void CreateCode(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ImageCode imageCode = (ImageCode)imageCodeGenerator.generate(request);
-        sessionStrategy.setAttribute(new ServletWebRequest(request), SESSION_KEY, imageCode);
-        ImageIO.write(imageCode.getImage(), "JPEG", response.getOutputStream());
+    @GetMapping("/code/{type}")
+    public void imageCode(HttpServletRequest request, HttpServletResponse response, @PathVariable String type) throws IOException {
+        validateCodeProcessors.get(type + "CodeProcessor").create(new ServletWebRequest(request, response));
     }
-
-
-
 
 
 }

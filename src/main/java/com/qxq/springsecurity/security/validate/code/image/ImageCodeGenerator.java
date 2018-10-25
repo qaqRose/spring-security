@@ -4,6 +4,7 @@ import com.qxq.springsecurity.security.properties.SecurityProperties;
 import com.qxq.springsecurity.security.validate.code.ValidateCodeGenerator;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +15,10 @@ import java.util.Random;
 /**
  * @author: QXQ
  */
+@Component("imageCodeGenerator")
 public class ImageCodeGenerator implements ValidateCodeGenerator {
 
+    @Autowired
     private SecurityProperties securityProperties;
 
     /**

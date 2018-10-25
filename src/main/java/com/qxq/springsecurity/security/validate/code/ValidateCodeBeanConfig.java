@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @author: QXQ
  */
 @Configuration
-public class ValidataCodeBeanConfig {
+public class ValidateCodeBeanConfig {
     @Autowired
     private SecurityProperties securityProperties;
 

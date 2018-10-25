@@ -18,7 +18,11 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
+import javax.sql.DataSource;
 
 /**
  * @author: QXQ
@@ -41,6 +45,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private SecurityProperties securityProperties;
 
+    @Autowired
+    private DataSource dataSource;
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+//        jdbcTokenRepository.setCreateTableOnStartup(true);  //第一次需要自动创建表
+        jdbcTokenRepository.setDataSource(dataSource);
+        return jdbcTokenRepository;
+    }
+
     @Override
     public void configure(WebSecurity web) throws Exception {
         // 以下资源  spring security 不会对其进行拦截
@@ -57,30 +72,37 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         validateCodeFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
         validateCodeFilter.setSecurityProperties(securityProperties);
         validateCodeFilter.afterPropertiesSet();
+
         http
                 .addFilterBefore(validateCodeFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(filterSecurityInterceptor, FilterSecurityInterceptor.class)
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/code/image").permitAll()  // 不需要任何权限
-                .anyRequest().authenticated()  //All other paths must be authenticated
+                    .antMatchers("/", "/home", "/code/image").permitAll()  // 不需要任何权限
+                    .anyRequest().authenticated()  //All other paths must be authenticated
                 .and()
                 .formLogin()
-                .loginPage("/login")   //设置登录页面
-                .loginProcessingUrl("/auth/form")
-                .successHandler(customAuthenticationSuccessHandler)
-                .failureHandler(customAuthenticationFailureHandler)
-                .permitAll();
+                    .loginPage("/login")   //设置登录页面
+                    .loginProcessingUrl("/auth/form")
+                    .successHandler(customAuthenticationSuccessHandler)
+                    .failureHandler(customAuthenticationFailureHandler)
+                    .permitAll();
 
         http
                 .csrf()   //开启csrf防护
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) //将令牌存储在Cookie,可以使用js访问
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) //将令牌存储在Cookie,可以使用js访问
                 .and()
 //                .csrf().disable()
                 .logout()
-                .logoutUrl("/logout") //自定义登出url
-                .logoutSuccessUrl("/home")   //登出成功后跳转url
-                .invalidateHttpSession(true);
+                    .logoutUrl("/logout") //自定义登出url
+                    .logoutSuccessUrl("/home")   //登出成功后跳转url
+                    .invalidateHttpSession(true);
 
-        http.addFilterBefore(filterSecurityInterceptor, FilterSecurityInterceptor.class);
+        http
+                .rememberMe()
+                .tokenValiditySeconds(securityProperties.getBrower().getRememberMeSeconds())
+                .tokenRepository(persistentTokenRepository())
+                .userDetailsService(userDetailsService);
+
     }
 
     @Autowired
